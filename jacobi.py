@@ -1,10 +1,13 @@
 from PIL import Image
 import numpy as np
 import glob
+import os
 
-image_locations = glob.glob("**/*.png")
+image_locations = glob.glob("outputs/noisy/*.png")
 a = 0.08
 b = 0.23
+
+save_dir = "outputs/clean"
 
 iterations = int(input("Give the number of iterations: "))
 
@@ -42,8 +45,11 @@ def jacobi_method(current_pixels):
         return np.dstack((new_red_channel, new_green_channel, new_blue_channel))
                 
 
-for blurry_image in image_locations:
-    with Image.open(blurry_image).convert("RGB") as img:
+for noisy_image in image_locations:
+    noisy_image_name = os.path.basename(noisy_image)
+    clean_image_name = noisy_image_name.split("_")[0]
+
+    with Image.open(noisy_image).convert("RGB") as img:
         original_pixels = np.array(img).astype(np.float64)
         
         current_pixels = original_pixels
@@ -54,4 +60,6 @@ for blurry_image in image_locations:
         
         result = np.clip(current_pixels, 0, 255).astype(np.uint8)
         result_img = Image.fromarray(result, "RGB")
-        result_img.save("result.png")
+
+        clean_image_path = f"{clean_image_name}_clean_{iterations}.png"
+        result_img.save(os.path.join(save_dir, clean_image_path))
