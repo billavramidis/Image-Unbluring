@@ -32,8 +32,6 @@ def gauss_seidel_method(original_pixels, current_pixels):
                     left + right + up + bottom
                 )
 
-    return current_pixels
-
 
 for noisy_image in image_paths:
     noisy_image_name = noisy_image.stem
@@ -45,7 +43,7 @@ for noisy_image in image_paths:
         current_pixels = original_pixels.copy()
 
         for _ in range(0, iterations):
-            current_pixels = gauss_seidel_method(original_pixels, current_pixels)
+            gauss_seidel_method(original_pixels, current_pixels)
 
         result = np.clip(current_pixels, 0, 255).astype(np.uint8)
         result_img = Image.fromarray(result, "RGB")
