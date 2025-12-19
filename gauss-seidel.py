@@ -35,8 +35,8 @@ def gauss_seidel_method(original_pixels, current_pixels):
     return current_pixels
 
 
-for noisy_image in image_locations:
-    noisy_image_name = os.path.basename(noisy_image)
+for noisy_image in image_paths:
+    noisy_image_name = noisy_image.stem
     clean_image_name = noisy_image_name.split("_")[0]
 
     with Image.open(noisy_image).convert("RGB") as img:
@@ -51,4 +51,4 @@ for noisy_image in image_locations:
         result_img = Image.fromarray(result, "RGB")
 
         clean_image_path = f"{clean_image_name}_clean_gauss-seidel_{iterations}.png"
-        result_img.save(os.path.join(save_dir, clean_image_path))
+        result_img.save(save_path / clean_image_path)
