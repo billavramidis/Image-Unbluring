@@ -1,13 +1,16 @@
 from PIL import Image
 import numpy as np
-import glob
-import os
+from pathlib import Path
 
-image_locations = glob.glob("outputs/noisy/*.png")
+image_directory_path = Path("outputs/noisy/")
+image_paths = [
+    f for f in image_directory_path.iterdir() if f.suffix in [".jpg", ".png", ".webp"]
+]
+
 a = 0.08
 b = 0.23
 
-save_dir = "outputs/clean"
+save_path = Path("outputs/clean/")
 
 iterations = int(input("Give the number of iterations: "))
 
@@ -34,8 +37,8 @@ def jacobi_method(original_pixels, current_pixels):
     return new_pixels
 
 
-for noisy_image in image_locations:
-    noisy_image_name = os.path.basename(noisy_image)
+for noisy_image in image_paths:
+    noisy_image_name = noisy_image.stem
     clean_image_name = noisy_image_name.split("_")[0]
 
     with Image.open(noisy_image).convert("RGB") as img:
@@ -51,4 +54,4 @@ for noisy_image in image_locations:
         result_img = Image.fromarray(result, "RGB")
 
         clean_image_path = f"{clean_image_name}_clean_jacobi_{iterations}.png"
-        result_img.save(os.path.join(save_dir, clean_image_path))
+        result_img.save(save_path / clean_image_path)

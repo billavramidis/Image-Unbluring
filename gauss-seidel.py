@@ -1,13 +1,16 @@
 from PIL import Image
 import numpy as np
-import glob
-import os
+from pathlib import Path
 
-image_locations = glob.glob("outputs/noisy/*.png")
+image_directory_path = Path("outputs/noisy/")
+image_paths = [
+    f for f in image_directory_path.iterdir() if f.suffix in [".jpg", ".png", ".webp"]
+]
+
 a = 0.08
 b = 0.23
 
-save_dir = "outputs/clean"
+save_path = Path("outputs/clean/")
 
 iterations = int(input("Give the number of iterations: "))
 
