@@ -18,17 +18,18 @@ iterations = int(input("Give the number of iterations: "))
 def jacobi_method(original_pixels, current_pixels):
     height, width, channels = current_pixels.shape
 
+    padded_pixels = np.pad(
+        current_pixels, pad_width=((1, 1), (1, 1), (0, 0)), mode="edge"
+    )
     new_pixels = np.empty_like(current_pixels)
 
     for i in range(0, height):
         for j in range(0, width):
             for k in range(0, channels):
-                center = current_pixels[i, j, k]
-
-                left = current_pixels[i, j - 1, k] if j > 0 else center
-                right = current_pixels[i, j + 1, k] if j < width - 1 else center
-                up = current_pixels[i - 1, j, k] if i > 0 else center
-                bottom = current_pixels[i + 1, j, k] if i < height - 1 else center
+                left = padded_pixels[i + 1, j, k]
+                right = padded_pixels[i + 1, j + 2, k]
+                up = padded_pixels[i, j + 1, k]
+                bottom = padded_pixels[i + 2, j + 1, k]
 
                 new_pixels[i, j, k] = a * original_pixels[i, j, k] + b * (
                     left + right + up + bottom
