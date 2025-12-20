@@ -16,20 +16,17 @@ iterations = int(input("Give the number of iterations: "))
 
 
 def gauss_seidel_method(original_pixels, current_pixels):
-    height, width, channels = current_pixels.shape
-    padded_pixels = np.pad(
-        current_pixels, pad_width=((1, 1), (1, 1), (0, 0)), mode="edge"
-    )
+    height, width, channels = original_pixels.shape
 
     for i in range(0, height):
         for j in range(0, width):
             for k in range(0, channels):
-                left = padded_pixels[i + 1, j, k]
-                right = padded_pixels[i + 1, j + 2, k]
-                up = padded_pixels[i, j + 1, k]
-                bottom = padded_pixels[i + 2, j + 1, k]
+                left = current_pixels[i + 1, j, k]
+                right = current_pixels[i + 1, j + 2, k]
+                up = current_pixels[i, j + 1, k]
+                bottom = current_pixels[i + 2, j + 1, k]
 
-                current_pixels[i, j, k] = a * original_pixels[i, j, k] + b * (
+                current_pixels[i + 1, j + 1, k] = a * original_pixels[i, j, k] + b * (
                     left + right + up + bottom
                 )
 
@@ -41,10 +38,14 @@ for noisy_image in image_paths:
     with Image.open(noisy_image).convert("RGB") as img:
         original_pixels = np.array(img).astype(np.float64)
 
-        current_pixels = original_pixels.copy()
+        current_pixels = np.pad(
+            original_pixels, pad_width=((1, 1), (1, 1), (0, 0)), mode="edge"
+        )
 
         for _ in range(0, iterations):
             gauss_seidel_method(original_pixels, current_pixels)
+
+        current_pixels = current_pixels[1:-1, 1:-1, :]
 
         result = np.clip(current_pixels, 0, 255).astype(np.uint8)
         result_img = Image.fromarray(result, "RGB")
