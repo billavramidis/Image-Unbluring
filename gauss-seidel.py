@@ -15,7 +15,7 @@ else:
 a = 0.08
 b = 0.23
 
-save_path = Path("outputs/denoised/")
+save_path = Path("outputs/denoised/gauss-seidel")
 
 iterations = int(input("Give the number of iterations: "))
 
