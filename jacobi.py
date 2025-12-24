@@ -2,15 +2,20 @@ from PIL import Image
 import numpy as np
 from pathlib import Path
 
-image_directory_path = Path("outputs/noisy/")
-image_paths = [
-    f for f in image_directory_path.iterdir() if f.suffix in [".jpg", ".png", ".webp"]
+noisy_directory_path = Path("outputs/noisy/")
+noisy_image_paths = [
+    f for f in noisy_directory_path.iterdir() if f.suffix in [".jpg", ".png", ".webp"]
 ]
+
+if len(noisy_image_paths) == 1:
+    noisy_image = noisy_image_paths[0]
+else:
+    raise ValueError(f"Expected 1 Image, found {len(noisy_image_paths)}")
 
 a = 0.08
 b = 0.23
 
-save_path = Path("outputs/clean/")
+save_path = Path("outputs/denoised/")
 
 iterations = int(input("Give the number of iterations: "))
 
@@ -35,25 +40,24 @@ def jacobi_method(original_pixels, current_pixels):
     return new_pixels
 
 
-for noisy_image in image_paths:
-    noisy_image_name = noisy_image.stem
-    clean_image_name = noisy_image_name.split("_")[0]
+noisy_image_name = noisy_image.stem
+clean_image_name = noisy_image_name.split("_")[0]
 
-    with Image.open(noisy_image).convert("RGB") as img:
-        original_pixels = np.array(img).astype(np.float64)
+with Image.open(noisy_image).convert("RGB") as img:
+    original_pixels = np.array(img).astype(np.float64)
 
-        current_pixels = np.pad(
-            original_pixels, pad_width=((1, 1), (1, 1), (0, 0)), mode="edge"
-        )
+    current_pixels = np.pad(
+        original_pixels, pad_width=((1, 1), (1, 1), (0, 0)), mode="edge"
+    )
 
-        for _ in range(0, iterations):
-            new_pixels = jacobi_method(original_pixels, current_pixels)
-            current_pixels = new_pixels
+    for _ in range(0, iterations):
+        new_pixels = jacobi_method(original_pixels, current_pixels)
+        current_pixels = new_pixels
 
-        current_pixels = current_pixels[1:-1, 1:-1, :]
+    current_pixels = current_pixels[1:-1, 1:-1, :]
 
-        result = np.clip(current_pixels, 0, 255).astype(np.uint8)
-        result_img = Image.fromarray(result, "RGB")
+    result = np.clip(current_pixels, 0, 255).astype(np.uint8)
+    result_img = Image.fromarray(result, "RGB")
 
-        clean_image_path = f"{clean_image_name}_clean_jacobi_{iterations}.png"
-        result_img.save(save_path / clean_image_path)
+    clean_image_path = f"{clean_image_name}_clean_jacobi_{iterations}.png"
+    result_img.save(save_path / clean_image_path)
