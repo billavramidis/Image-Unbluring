@@ -2,7 +2,7 @@ from PIL import Image
 import numpy as np
 from pathlib import Path
 
-noisy_directory_path = Path("outputs/noisy/")
+noisy_directory_path = Path("inputs/noisy/")
 noisy_image_paths = [
     f for f in noisy_directory_path.iterdir() if f.suffix in [".jpg", ".png", ".webp"]
 ]
@@ -15,7 +15,8 @@ else:
 a = 0.08
 b = 0.23
 
-save_path = Path("outputs/denoised/")
+save_path = Path("outputs/jacobi")
+save_path.mkdir(parents=True, exist_ok=True)
 
 iterations = int(input("Give the number of iterations: "))
 

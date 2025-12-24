@@ -1,8 +1,9 @@
 from PIL import Image
 import numpy as np
 from pathlib import Path
+from numba import njit
 
-noisy_directory_path = Path("outputs/noisy/")
+noisy_directory_path = Path("inputs/noisy/")
 noisy_image_paths = [
     f for f in noisy_directory_path.iterdir() if f.suffix in [".jpg", ".png", ".webp"]
 ]
@@ -15,8 +16,6 @@ else:
 a = 0.08
 b = 0.23
 
-save_path = Path("outputs/denoised/")
-
 iterations = int(input("Give the number of iterations: "))
 
 while True:
@@ -26,7 +25,11 @@ while True:
     if omega > 0 and omega < 2:
         break
 
+save_path = Path(f"outputs/sor/")
+save_path.mkdir(parents=True, exist_ok=True)
 
+
+@njit
 def sor_method(original_pixels, current_pixels):
     height, width, channels = original_pixels.shape
 
@@ -63,5 +66,5 @@ with Image.open(noisy_image).convert("RGB") as img:
     result = np.clip(current_pixels, 0, 255).astype(np.uint8)
     result_img = Image.fromarray(result, "RGB")
 
-    clean_image_path = f"{clean_image_name}_clean_sor_{iterations}.png"
+    clean_image_path = f"{clean_image_name}_clean_sor{omega}_{iterations}.png"
     result_img.save(save_path / clean_image_path)

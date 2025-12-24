@@ -4,9 +4,11 @@ from pathlib import Path
 
 denoised_directory_path = Path("outputs/denoised/")
 denoised_image_paths = [
-    f
-    for f in denoised_directory_path.iterdir()
-    if f.suffix in [".jpg", ".png", ".webp"]
+    file
+    for method_directory in denoised_directory_path.iterdir()
+    if method_directory.is_dir()
+    for file in method_directory.iterdir()
+    if file.suffix.lower() in [".jpg", ".png", ".webp"]
 ]
 
 clean_directory_path = Path("inputs/clean/")
